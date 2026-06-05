@@ -1,0 +1,73 @@
+/* ── Dark prose overrides for blog posts ──────────────────────────────────── */
+.prose {
+  --tw-prose-body:       #9BA8C8;
+  --tw-prose-headings:   #EEF2FF;
+  --tw-prose-lead:       #8892B4;
+  --tw-prose-links:      #00E5FF;
+  --tw-prose-bold:       #EEF2FF;
+  --tw-prose-counters:   #8892B4;
+  --tw-prose-bullets:    #4B5680;
+  --tw-prose-hr:         rgba(255,255,255,0.08);
+  --tw-prose-quotes:     #EEF2FF;
+  --tw-prose-quote-borders: #7C3AED;
+  --tw-prose-captions:   #4B5680;
+  --tw-prose-code:       #00E5FF;
+  --tw-prose-pre-code:   #c9d1d9;
+  --tw-prose-pre-bg:     #0D1117;
+  --tw-prose-th-borders: rgba(255,255,255,0.12);
+  --tw-prose-td-borders: rgba(255,255,255,0.06);
+}
+
+/* Inline code style */
+.prose code:not(pre code) {
+  background:    rgba(0, 229, 255, 0.08);
+  border:        1px solid rgba(0, 229, 255, 0.15);
+  border-radius: 4px;
+  padding:       0.15em 0.4em;
+  font-size:     0.875em;
+  color:         #00E5FF;
+}
+
+/* Code block wrapper */
+.prose pre {
+  background:   #0D1117;
+  border:       1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  overflow-x:   auto;
+}
+
+/* Blockquote */
+.prose blockquote {
+  background:   rgba(124, 58, 237, 0.06);
+  border-left-color: #7C3AED;
+  border-radius: 0 8px 8px 0;
+  padding:      1rem 1.5rem;
+  font-style:   normal;
+}
+
+/* Heading anchor links */
+.prose h2, .prose h3, .prose h4 {
+  scroll-margin-top: 6rem;
+}
+
+/* Links */
+.prose a {
+  transition: color 0.15s;
+  text-underline-offset: 3px;
+}
+.prose a:hover { color: #7C3AED; }
+
+/* Tables */
+.prose table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+.prose thead th {
+  background: rgba(124, 58, 237, 0.15);
+  color: #EEF2FF;
+}
+
+/* HR */
+.prose hr {
+  border-color: rgba(255,255,255,0.08);
+}

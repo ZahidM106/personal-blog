@@ -1,0 +1,88 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+
+const channels = [
+  {
+    icon: '✉',
+    label: 'Email',
+    value: 'itszahid106@gmail.com',
+    href:  'mailto:itszahid106@gmail.com',
+    desc:  'Best for questions, collaboration, or just saying hi.',
+    accent: '#00E5FF',
+  },
+  {
+    icon: 'in',
+    label: 'LinkedIn',
+    value: 'linkedin.com/in/zahid-mehmood',
+    href:  'https://linkedin.com/in/zahid-mehmood',
+    desc:  'Connect professionally — happy to grow the accounting network.',
+    accent: '#7C3AED',
+  },
+  {
+    icon: '⌥',
+    label: 'GitHub',
+    value: 'github.com/zahid-mehmood',
+    href:  'https://github.com/zahid-mehmood',
+    desc:  'Where I push the tools and automation scripts I build.',
+    accent: '#EC4899',
+  },
+];
+---
+
+<PageLayout
+  title="Contact — Zahid Mehmood"
+  description="Get in touch with Zahid Mehmood — accounting professional, UAE & UK tax specialist."
+>
+
+  <div class="pt-36 pb-16 px-6 bg-surface border-b border-white/[0.06]">
+    <div class="container max-w-3xl">
+      <p class="text-xs font-semibold text-neon-cyan uppercase tracking-widest mb-3">Contact</p>
+      <h1 class="font-display font-bold text-5xl md:text-6xl text-text-primary mb-4">Get in touch</h1>
+      <p class="text-text-secondary text-lg max-w-xl leading-relaxed">
+        Questions about UAE or UK tax? Want to collaborate on an accounting automation project?
+        Or just want to connect with a fellow number-cruncher?
+      </p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container max-w-3xl">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16">
+        {channels.map(c => (
+          <a
+            href={c.href}
+            target={c.href.startsWith('http') ? '_blank' : undefined}
+            rel={c.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+            class="glass flex flex-col gap-3 p-6 group hover:scale-[1.02] transition-transform"
+            data-reveal
+            data-reveal-group="contacts"
+          >
+            <span
+              class="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm"
+              style={`background: ${c.accent}18; color: ${c.accent}; border: 1px solid ${c.accent}30`}
+            >
+              {c.icon}
+            </span>
+            <div>
+              <div class="font-semibold text-text-primary text-sm mb-0.5 group-hover:text-neon-cyan transition-colors">
+                {c.label}
+              </div>
+              <div class="text-xs text-text-muted font-mono break-all mb-2">{c.value}</div>
+              <div class="text-xs text-text-secondary">{c.desc}</div>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <div class="glass p-8 text-center" data-reveal-solo>
+        <p class="text-text-secondary mb-2">
+          Based in <span class="text-text-primary font-medium">Lahore, Pakistan</span>.
+          Working remotely with clients in the <span class="text-text-primary font-medium">UAE</span> and
+          <span class="text-text-primary font-medium">UK</span>.
+        </p>
+        <p class="text-sm text-text-muted">Response time: usually within 24 hours.</p>
+      </div>
+    </div>
+  </section>
+
+</PageLayout>

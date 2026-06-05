@@ -1,0 +1,124 @@
+---
+// PostLayout.astro — full blog post reading layout
+import PageLayout from './PageLayout.astro';
+import ReadingProgress from '@components/blog/ReadingProgress';
+import TableOfContents from '@components/blog/TableOfContents';
+import Badge from '@components/ui/Badge';
+import { formatDate, isoDate } from '@utils/formatDate';
+import { readingTime } from '@utils/readingTime';
+import '@styles/prose.css';
+
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+  prev?: CollectionEntry<'posts'> | null;
+  next?: CollectionEntry<'posts'> | null;
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { post, prev, next, headings } = Astro.props;
+const { title, description, publishDate, updatedDate, tags, cover } = post.data;
+const mins = readingTime(post.body);
+
+// Build gradient for cover placeholder
+const GRADIENTS = [
+  'from-neon-cyan/20 via-neon-violet/20 to-neon-magenta/20',
+  'from-neon-violet/20 via-neon-cyan/20 to-neon-magenta/20',
+  'from-neon-magenta/20 via-neon-cyan/20 to-neon-violet/20',
+];
+const grad = GRADIENTS[title.charCodeAt(0) % GRADIENTS.length];
+---
+
+<PageLayout title={`${title} — Zahid Mehmood`} description={description} article>
+
+  <!-- Reading progress bar -->
+  <ReadingProgress client:load />
+
+  <!-- Post hero -->
+  <header class="pt-32 pb-16 px-6">
+    <div class="container max-w-3xl mx-auto">
+
+      <!-- Tags -->
+      <div class="flex flex-wrap gap-2 mb-6">
+        {tags.map(t => <Badge client:load label={t} />)}
+      </div>
+
+      <!-- Title -->
+      <h1 class="text-4xl md:text-5xl font-display font-bold text-text-primary mb-6 leading-tight text-balance">
+        {title}
+      </h1>
+
+      <!-- Description -->
+      <p class="text-lg text-text-secondary mb-8 leading-relaxed">{description}</p>
+
+      <!-- Meta row -->
+      <div class="flex flex-wrap items-center gap-4 text-sm text-text-muted border-t border-white/8 pt-6">
+        <span>
+          <time datetime={isoDate(publishDate)}>{formatDate(publishDate)}</time>
+        </span>
+        <span class="w-px h-4 bg-white/15" aria-hidden="true"></span>
+        <span>{mins} min read</span>
+        {updatedDate && (
+          <>
+            <span class="w-px h-4 bg-white/15" aria-hidden="true"></span>
+            <span>Updated <time datetime={isoDate(updatedDate)}>{formatDate(updatedDate)}</time></span>
+          </>
+        )}
+      </div>
+    </div>
+  </header>
+
+  <!-- Cover image / gradient placeholder -->
+  <div class="container max-w-3xl mx-auto px-6 mb-16">
+    <div class={`w-full h-52 md:h-72 rounded-2xl bg-gradient-to-br ${grad} border border-white/8 flex items-center justify-center`}>
+      <span class="text-6xl opacity-40 select-none" aria-hidden="true">✦</span>
+    </div>
+  </div>
+
+  <!-- Content + TOC -->
+  <div class="container mx-auto px-6 pb-24">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-16 items-start">
+
+      <!-- Article body -->
+      <article class="prose prose-lg max-w-none">
+        <slot />
+      </article>
+
+      <!-- Sticky TOC (desktop) -->
+      <aside class="hidden lg:block">
+        <div class="sticky top-28">
+          <TableOfContents headings={headings} client:load />
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- Prev / Next navigation -->
+  {(prev || next) && (
+    <nav class="container mx-auto px-6 pb-24 max-w-3xl">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-white/8 pt-12">
+        {prev && (
+          <a href={`/blog/${prev.slug}`}
+             class="glass p-5 group flex flex-col gap-1">
+            <span class="text-xs text-text-muted uppercase tracking-widest">← Previous</span>
+            <span class="text-text-primary font-medium group-hover:text-neon-cyan transition-colors line-clamp-2">
+              {prev.data.title}
+            </span>
+          </a>
+        )}
+        {next && (
+          <a href={`/blog/${next.slug}`}
+             class="glass p-5 group flex flex-col gap-1 sm:text-right sm:items-end">
+            <span class="text-xs text-text-muted uppercase tracking-widest">Next →</span>
+            <span class="text-text-primary font-medium group-hover:text-neon-cyan transition-colors line-clamp-2">
+              {next.data.title}
+            </span>
+          </a>
+        )}
+      </div>
+    </nav>
+  )}
+
+</PageLayout>

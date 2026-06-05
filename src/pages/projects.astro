@@ -1,0 +1,33 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import ProjectCard from '@components/projects/ProjectCard';
+import { projects } from '@data/projects';
+---
+
+<PageLayout
+  title="Projects — Zahid Mehmood"
+  description="Tools and automation I've built to make accounting faster, more accurate, and less painful."
+>
+
+  <div class="pt-36 pb-16 px-6 bg-surface border-b border-white/[0.06]">
+    <div class="container max-w-3xl">
+      <p class="text-xs font-semibold text-neon-magenta uppercase tracking-widest mb-3">Work</p>
+      <h1 class="font-display font-bold text-5xl md:text-6xl text-text-primary mb-4">Projects</h1>
+      <p class="text-text-secondary text-lg max-w-xl leading-relaxed">
+        Tools and automation scripts I've built to solve real accounting problems.
+        Nothing theoretical — every one of these came from a pain point at work.
+      </p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {projects.map((p, i) => (
+          <ProjectCard project={p} index={i} client:visible />
+        ))}
+      </div>
+    </div>
+  </section>
+
+</PageLayout>

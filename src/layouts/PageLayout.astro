@@ -1,0 +1,83 @@
+---
+// PageLayout.astro — BaseLayout + Navbar + Footer + GSAP scroll-reveal init
+import BaseLayout from './BaseLayout.astro';
+import Navbar from '@components/layout/Navbar.astro';
+import Footer from '@components/layout/Footer.astro';
+
+interface Props {
+  title:       string;
+  description: string;
+  ogImage?:    string;
+  article?:    boolean;
+}
+
+const props = Astro.props;
+---
+
+<BaseLayout {...props}>
+  <Navbar />
+  <main id="main-content">
+    <slot />
+  </main>
+  <Footer />
+</BaseLayout>
+
+<!-- ── GSAP scroll-reveal (applied globally to [data-reveal] elements) ──── -->
+<script>
+  const prefersReduced =
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!prefersReduced) {
+    const { gsap }          = await import('gsap');
+    const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+
+    gsap.registerPlugin(ScrollTrigger);
+    // Expose for Lenis integration
+    (window as any).__gsapST = ScrollTrigger;
+
+    // Stagger-reveal any element with data-reveal attribute
+    const groups: Record<string, Element[]> = {};
+    document.querySelectorAll('[data-reveal]').forEach(el => {
+      const group = (el as HTMLElement).dataset.revealGroup ?? '__default__';
+      (groups[group] ??= []).push(el);
+    });
+
+    Object.values(groups).forEach(els => {
+      gsap.fromTo(
+        els,
+        { opacity: 0, y: 40 },
+        {
+          opacity:  1,
+          y:        0,
+          duration: 0.65,
+          ease:     'power3.out',
+          stagger:  0.09,
+          scrollTrigger: {
+            trigger: els[0],
+            start:   'top 88%',
+            once:    true,
+          },
+        },
+      );
+    });
+
+    // Reveal individual elements without a group
+    document.querySelectorAll('[data-reveal-solo]').forEach(el => {
+      gsap.fromTo(
+        el,
+        { opacity: 0, y: 30 },
+        {
+          opacity:  1,
+          y:        0,
+          duration: 0.65,
+          ease:     'power3.out',
+          scrollTrigger: {
+            trigger: el,
+            start:   'top 88%',
+            once:    true,
+          },
+        },
+      );
+    });
+  }
+</script>

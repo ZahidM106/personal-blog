@@ -1,0 +1,99 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import Timeline from '@components/about/Timeline';
+import Badge from '@components/ui/Badge';
+
+const skills = {
+  'Accounting Software':  ['Xero', 'QuickBooks', 'Zoho Books', 'FreeAgent', 'HUBDOC'],
+  'Tax & Compliance':     ['TaxCalc', 'Capium', 'FBR IRIS', 'EmaraTax'],
+  'Tax Expertise':        ['UAE VAT', 'UAE Corporate Tax', 'UK VAT', 'UK Self Assessment', 'FBR Income Tax'],
+  'Standards & Frameworks': ['IFRS', 'UK GAAP', 'ISA (Audit Standards)'],
+  'Productivity':         ['Microsoft Excel', 'Microsoft Word', 'PowerPoint'],
+};
+---
+
+<PageLayout
+  title="About — Zahid Mehmood"
+  description="Accounting & Finance professional based in Lahore, Pakistan. UAE and UK tax compliance, CIMA candidate."
+>
+
+  <!-- Header -->
+  <div class="pt-36 pb-16 px-6 bg-surface border-b border-white/[0.06]">
+    <div class="container max-w-3xl">
+      <p class="text-xs font-semibold text-neon-violet uppercase tracking-widest mb-3">About</p>
+      <h1 class="font-display font-bold text-5xl md:text-6xl text-text-primary mb-4">
+        Zahid <span class="gradient-text">Mehmood</span>
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed max-w-xl">
+        Accounting &amp; Finance professional based in Lahore, Pakistan.
+        Currently working across UAE and UK accounting environments simultaneously,
+        with a CIMA Strategic Case Study standing between me and the full CGMA designation.
+      </p>
+    </div>
+  </div>
+
+  <!-- Bio -->
+  <section class="section" aria-labelledby="bio-heading">
+    <div class="container max-w-3xl">
+      <h2 id="bio-heading" class="font-display font-bold text-2xl text-text-primary mb-6" data-reveal-solo>
+        Background
+      </h2>
+      <div class="space-y-4 text-text-secondary leading-relaxed" data-reveal-solo>
+        <p>
+          I graduated in July 2025 with a BS in Accounting & Finance from Hailey College of Commerce,
+          University of the Punjab — CGPA 3.80/4.0, OPM 85/100, 135 credit hours, entirely delivered in English.
+          The degree covered Financial Accounting, Corporate Finance, Financial Risk Management,
+          Investment & Portfolio Management, Managerial Accounting, Audit & Assurance,
+          Financial Reporting, Business Law, ERP, and Forensic Accounting.
+        </p>
+        <p>
+          Since July 2024 I've been an Accounts Executive at 1Financial-FZCO, managing bookkeeping
+          and tax compliance for multiple UAE-based client companies using QuickBooks, Zoho Books, and Xero.
+          I've prepared and filed quarterly UAE VAT returns and Corporate Tax returns under FTA regulations,
+          registered companies with the FTA, processed payroll, and filed FBR IRIS income tax returns.
+        </p>
+        <p>
+          Since August 2025 I've simultaneously been working as an Assistant Accountant at
+          HA & Co. Chartered Certified Accountants, handling UK bookkeeping, VAT workings,
+          Self Assessment returns, and Corporate Tax preparation using Xero, FreeAgent,
+          TaxCalc, and Capium across a portfolio of UK SME clients.
+        </p>
+        <p>
+          In April 2026, CIMA awarded me 15 exemptions from their professional qualification
+          based on my degree — meaning only the Strategic Case Study (SCS) examination remains
+          before I hold the full Chartered Global Management Accountant (CGMA) designation.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills -->
+  <section class="section bg-surface" aria-labelledby="skills-heading">
+    <div class="container max-w-3xl">
+      <h2 id="skills-heading" class="font-display font-bold text-2xl text-text-primary mb-8" data-reveal-solo>
+        Skills & Software
+      </h2>
+      <div class="space-y-6">
+        {Object.entries(skills).map(([category, items]) => (
+          <div data-reveal data-reveal-group="skills">
+            <h3 class="text-xs font-semibold text-text-muted uppercase tracking-widest mb-3">{category}</h3>
+            <div class="flex flex-wrap gap-2">
+              {items.map(s => <Badge client:load label={s} />)}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline -->
+  <section class="section" aria-labelledby="timeline-heading">
+    <div class="container max-w-3xl">
+      <h2 id="timeline-heading" class="font-display font-bold text-2xl text-text-primary mb-10" data-reveal-solo>
+        Career Timeline
+      </h2>
+      <Timeline client:visible />
+    </div>
+  </section>
+
+</PageLayout>

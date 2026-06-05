@@ -1,0 +1,109 @@
+---
+// Navbar.astro — fixed, transparent → glass on scroll, mobile menu
+const links = [
+  { href: '/',         label: 'Home'     },
+  { href: '/blog',     label: 'Blog'     },
+  { href: '/projects', label: 'Projects' },
+  { href: '/about',    label: 'About'    },
+  { href: '/contact',  label: 'Contact'  },
+];
+
+const current = new URL(Astro.request.url).pathname;
+---
+
+<header
+  id="navbar"
+  class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+>
+  <div class="container mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
+
+    <!-- Logo -->
+    <a href="/" class="font-display font-bold text-xl tracking-tight group" aria-label="Zahid Mehmood home">
+      <span class="gradient-text">Z</span><span class="text-text-primary group-hover:text-white transition-colors">ahid</span><span class="text-text-muted">.</span>
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="hidden md:flex items-center gap-1" aria-label="Main navigation">
+      {links.map(l => {
+        const active = current === l.href || (l.href !== '/' && current.startsWith(l.href));
+        return (
+          <a
+            href={l.href}
+            class:list={[
+              'relative px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200 link-underline',
+              active ? 'text-neon-cyan' : 'text-text-secondary hover:text-text-primary',
+            ]}
+            aria-current={active ? 'page' : undefined}
+          >
+            {l.label}
+          </a>
+        );
+      })}
+    </nav>
+
+    <!-- Mobile menu button -->
+    <button
+      id="mobile-toggle"
+      class="md:hidden p-2 rounded-lg text-text-secondary hover:text-text-primary transition-colors"
+      aria-label="Toggle mobile menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <svg id="icon-open"  class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      <svg id="icon-close" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+  </div>
+
+  <!-- Mobile menu -->
+  <div
+    id="mobile-menu"
+    class="hidden md:hidden glass mx-4 mb-4 p-4"
+    role="dialog"
+    aria-label="Mobile navigation"
+  >
+    <nav class="flex flex-col gap-1">
+      {links.map(l => {
+        const active = current === l.href || (l.href !== '/' && current.startsWith(l.href));
+        return (
+          <a
+            href={l.href}
+            class:list={[
+              'px-4 py-3 rounded-lg text-sm font-medium transition-colors',
+              active ? 'text-neon-cyan bg-neon-cyan/5' : 'text-text-secondary hover:text-text-primary hover:bg-white/5',
+            ]}
+          >
+            {l.label}
+          </a>
+        );
+      })}
+    </nav>
+  </div>
+</header>
+
+<script>
+  // ── Scroll: transparent → glass ──────────────────────────────────────────
+  const nav = document.getElementById('navbar')!;
+  const update = () => {
+    if (window.scrollY > 30) {
+      nav.classList.add('bg-base/80', 'backdrop-blur-xl', 'border-b', 'border-white/[0.06]', 'shadow-[0_1px_24px_rgba(0,0,0,0.4)]');
+    } else {
+      nav.classList.remove('bg-base/80', 'backdrop-blur-xl', 'border-b', 'border-white/[0.06]', 'shadow-[0_1px_24px_rgba(0,0,0,0.4)]');
+    }
+  };
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+
+  // ── Mobile toggle ─────────────────────────────────────────────────────────
+  const btn   = document.getElementById('mobile-toggle')!;
+  const menu  = document.getElementById('mobile-menu')!;
+  const open  = document.getElementById('icon-open')!;
+  const close = document.getElementById('icon-close')!;
+
+  btn.addEventListener('click', () => {
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', String(!expanded));
+    menu.classList.toggle('hidden');
+    open.classList.toggle('hidden');
+    close.classList.toggle('hidden');
+  });
+</script>

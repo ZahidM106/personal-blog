@@ -1,0 +1,78 @@
+---
+// BaseLayout.astro — HTML shell: fonts, Lenis smooth scroll, View Transitions, grain overlay
+import { ViewTransitions } from 'astro:transitions';
+import SEO from '@components/layout/SEO.astro';
+import '@styles/global.css';
+
+interface Props {
+  title:       string;
+  description: string;
+  ogImage?:    string;
+  article?:    boolean;
+}
+
+const { title, description, ogImage, article = false } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="generator" content={Astro.generator} />
+
+  <SEO
+    title={title}
+    description={description}
+    ogImage={ogImage}
+    article={article}
+    url={Astro.url.href}
+  />
+
+  <ViewTransitions />
+</head>
+
+<body class="bg-base text-text-primary antialiased">
+
+  <!-- Film-grain overlay (CSS-only, zero JS) -->
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- Page slot -->
+  <slot />
+
+  <!-- ── Lenis smooth scroll init ──────────────────────────────────────────── -->
+  <script>
+    import Lenis from 'lenis';
+
+    const prefersReduced =
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!prefersReduced) {
+      const lenis = new Lenis({
+        duration:  1.2,
+        easing:    (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true,
+      });
+
+      // Hook GSAP ScrollTrigger into Lenis tick if GSAP is loaded
+      lenis.on('scroll', () => {
+        // @ts-ignore — GSAP may not be loaded on every page
+        if (typeof window.__gsapST !== 'undefined') {
+          window.__gsapST.update();
+        }
+      });
+
+      const raf = (time: number) => {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      };
+      requestAnimationFrame(raf);
+
+      // Expose to other scripts
+      (window as any).__lenis = lenis;
+    }
+  </script>
+
+</body>
+</html>
