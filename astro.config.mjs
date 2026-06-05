@@ -4,7 +4,7 @@ import tailwind from '@astrojs/tailwind';
 import mdx from '@astrojs/mdx';
 
 export default defineConfig({
-  site: 'https://zahidmehmood.dev',
+  site: 'https://zahidm106.netlify.app',
   integrations: [
     react(),
     tailwind({ applyBaseStyles: false }),
