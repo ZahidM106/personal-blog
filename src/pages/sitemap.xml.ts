@@ -2,7 +2,7 @@ import type { APIContext } from 'astro';
 import { getCollection } from 'astro:content';
 
 export async function GET(context: APIContext) {
-  const site  = (context.site ?? 'https://zahidmehmood.dev').toString().replace(/\/$/, '');
+  const site  = (context.site ?? 'https://zahidm106.netlify.app').toString().replace(/\/$/, '');
   const posts = await getCollection('posts', ({ data }) => !data.draft);
 
   const staticPages = [
