@@ -2,7 +2,6 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 import mdx from '@astrojs/mdx';
-import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://zahidmehmood.dev',
@@ -10,7 +9,7 @@ export default defineConfig({
     react(),
     tailwind({ applyBaseStyles: false }),
     mdx(),
-    sitemap(),
+    // sitemap handled by src/pages/sitemap.xml.ts (avoids @astrojs/sitemap 3.7.x regression)
   ],
   markdown: {
     shikiConfig: {
