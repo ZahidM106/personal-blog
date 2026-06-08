@@ -11,7 +11,7 @@ export async function GET(context: APIContext) {
   return rss({
     title:       'Zahid Mehmood — Accounting & Finance Blog',
     description: 'Practical articles on UAE & UK taxation, bookkeeping software, and management accounting.',
-    site:        context.site ?? 'https://zahidm106.netlify.app',
+    site:        context.site ?? 'https://zahidmehmood.netlify.app',
     items:       sorted.map(p => ({
       title:       p.data.title,
       description: p.data.description,
