@@ -81,45 +81,44 @@ const current = new URL(Astro.request.url).pathname;
 </header>
 
 <script>
-  // Module-level ref so we can remove the old scroll listener before adding a
-  // new one each time setup() runs — prevents stacking on window across navigations.
-  let _scrollHandler: (() => void) | null = null;
-
-  function setup() {
-    const nav       = document.getElementById('navbar')       as HTMLElement | null;
-    const btn       = document.getElementById('mobile-toggle') as HTMLButtonElement | null;
-    const menu      = document.getElementById('mobile-menu')   as HTMLElement | null;
-    const iconOpen  = document.getElementById('icon-open')     as HTMLElement | null;
-    const iconClose = document.getElementById('icon-close')    as HTMLElement | null;
-
-    if (!nav || !btn || !menu || !iconOpen || !iconClose) return;
-
-    // ── Scroll: transparent → glass ────────────────────────────────────────
-    if (_scrollHandler) window.removeEventListener('scroll', _scrollHandler);
-    _scrollHandler = () => {
-      if (window.scrollY > 30) {
-        nav.classList.add('bg-base/80', 'backdrop-blur-xl', 'border-b', 'border-white/[0.06]', 'shadow-[0_1px_24px_rgba(0,0,0,0.4)]');
-      } else {
-        nav.classList.remove('bg-base/80', 'backdrop-blur-xl', 'border-b', 'border-white/[0.06]', 'shadow-[0_1px_24px_rgba(0,0,0,0.4)]');
-      }
-    };
-    window.addEventListener('scroll', _scrollHandler, { passive: true });
-    _scrollHandler();
-
-    // ── Mobile toggle ───────────────────────────────────────────────────────
-    // btn is a fresh DOM node after every swap, so no duplicate-listener risk.
-    btn.addEventListener('click', () => {
-      const expanded = btn.getAttribute('aria-expanded') === 'true';
-      btn.setAttribute('aria-expanded', String(!expanded));
-      menu.classList.toggle('hidden');
-      iconOpen.classList.toggle('hidden');
-      iconClose.classList.toggle('hidden');
-    });
+  // ── Scroll: transparent → glass ──────────────────────────────────────────
+  // Re-queries #navbar on every tick so it always refs the current DOM node.
+  // Added once to window (persistent) — never stacks across navigations.
+  function handleScroll() {
+    const nav = document.getElementById('navbar');
+    if (!nav) return;
+    if (window.scrollY > 30) {
+      nav.classList.add('bg-base/80', 'backdrop-blur-xl', 'border-b', 'border-white/[0.06]', 'shadow-[0_1px_24px_rgba(0,0,0,0.4)]');
+    } else {
+      nav.classList.remove('bg-base/80', 'backdrop-blur-xl', 'border-b', 'border-white/[0.06]', 'shadow-[0_1px_24px_rgba(0,0,0,0.4)]');
+    }
   }
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  handleScroll(); // set correct state for current scroll position on first load
 
-  // Close the menu before the outgoing page is swapped out so it never
-  // appears open on the incoming page during the transition animation.
-  document.addEventListener('astro:before-swap', () => {
+  // ── Mobile toggle — event delegation on document ──────────────────────────
+  // document is never replaced during View Transitions, so this listener is
+  // registered once and works on the first load AND every subsequent navigation.
+  document.addEventListener('click', (e) => {
+    if (!(e.target as Element).closest('#mobile-toggle')) return;
+
+    const btn       = document.getElementById('mobile-toggle');
+    const menu      = document.getElementById('mobile-menu');
+    const iconOpen  = document.getElementById('icon-open');
+    const iconClose = document.getElementById('icon-close');
+    if (!btn || !menu || !iconOpen || !iconClose) return;
+
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', String(!expanded));
+    menu.classList.toggle('hidden');
+    iconOpen.classList.toggle('hidden');
+    iconClose.classList.toggle('hidden');
+  });
+
+  // ── Reset on navigation ───────────────────────────────────────────────────
+  // astro:after-swap fires after the new DOM is in place. Reset the incoming
+  // page's menu to closed and re-evaluate the scroll state (scroll resets to 0).
+  document.addEventListener('astro:after-swap', () => {
     const menu      = document.getElementById('mobile-menu');
     const btn       = document.getElementById('mobile-toggle');
     const iconOpen  = document.getElementById('icon-open');
@@ -128,8 +127,6 @@ const current = new URL(Astro.request.url).pathname;
     if (btn)       btn.setAttribute('aria-expanded', 'false');
     if (iconOpen)  iconOpen.classList.remove('hidden');
     if (iconClose) iconClose.classList.add('hidden');
+    handleScroll();
   });
-
-  // Re-bind every listener after each View Transition (and on first load).
-  document.addEventListener('astro:page-load', setup);
 </script>
