@@ -81,29 +81,55 @@ const current = new URL(Astro.request.url).pathname;
 </header>
 
 <script>
-  // ── Scroll: transparent → glass ──────────────────────────────────────────
-  const nav = document.getElementById('navbar')!;
-  const update = () => {
-    if (window.scrollY > 30) {
-      nav.classList.add('bg-base/80', 'backdrop-blur-xl', 'border-b', 'border-white/[0.06]', 'shadow-[0_1px_24px_rgba(0,0,0,0.4)]');
-    } else {
-      nav.classList.remove('bg-base/80', 'backdrop-blur-xl', 'border-b', 'border-white/[0.06]', 'shadow-[0_1px_24px_rgba(0,0,0,0.4)]');
-    }
-  };
-  window.addEventListener('scroll', update, { passive: true });
-  update();
+  // Module-level ref so we can remove the old scroll listener before adding a
+  // new one each time setup() runs — prevents stacking on window across navigations.
+  let _scrollHandler: (() => void) | null = null;
 
-  // ── Mobile toggle ─────────────────────────────────────────────────────────
-  const btn   = document.getElementById('mobile-toggle')!;
-  const menu  = document.getElementById('mobile-menu')!;
-  const open  = document.getElementById('icon-open')!;
-  const close = document.getElementById('icon-close')!;
+  function setup() {
+    const nav       = document.getElementById('navbar')       as HTMLElement | null;
+    const btn       = document.getElementById('mobile-toggle') as HTMLButtonElement | null;
+    const menu      = document.getElementById('mobile-menu')   as HTMLElement | null;
+    const iconOpen  = document.getElementById('icon-open')     as HTMLElement | null;
+    const iconClose = document.getElementById('icon-close')    as HTMLElement | null;
 
-  btn.addEventListener('click', () => {
-    const expanded = btn.getAttribute('aria-expanded') === 'true';
-    btn.setAttribute('aria-expanded', String(!expanded));
-    menu.classList.toggle('hidden');
-    open.classList.toggle('hidden');
-    close.classList.toggle('hidden');
+    if (!nav || !btn || !menu || !iconOpen || !iconClose) return;
+
+    // ── Scroll: transparent → glass ────────────────────────────────────────
+    if (_scrollHandler) window.removeEventListener('scroll', _scrollHandler);
+    _scrollHandler = () => {
+      if (window.scrollY > 30) {
+        nav.classList.add('bg-base/80', 'backdrop-blur-xl', 'border-b', 'border-white/[0.06]', 'shadow-[0_1px_24px_rgba(0,0,0,0.4)]');
+      } else {
+        nav.classList.remove('bg-base/80', 'backdrop-blur-xl', 'border-b', 'border-white/[0.06]', 'shadow-[0_1px_24px_rgba(0,0,0,0.4)]');
+      }
+    };
+    window.addEventListener('scroll', _scrollHandler, { passive: true });
+    _scrollHandler();
+
+    // ── Mobile toggle ───────────────────────────────────────────────────────
+    // btn is a fresh DOM node after every swap, so no duplicate-listener risk.
+    btn.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!expanded));
+      menu.classList.toggle('hidden');
+      iconOpen.classList.toggle('hidden');
+      iconClose.classList.toggle('hidden');
+    });
+  }
+
+  // Close the menu before the outgoing page is swapped out so it never
+  // appears open on the incoming page during the transition animation.
+  document.addEventListener('astro:before-swap', () => {
+    const menu      = document.getElementById('mobile-menu');
+    const btn       = document.getElementById('mobile-toggle');
+    const iconOpen  = document.getElementById('icon-open');
+    const iconClose = document.getElementById('icon-close');
+    if (menu)      menu.classList.add('hidden');
+    if (btn)       btn.setAttribute('aria-expanded', 'false');
+    if (iconOpen)  iconOpen.classList.remove('hidden');
+    if (iconClose) iconClose.classList.add('hidden');
   });
+
+  // Re-bind every listener after each View Transition (and on first load).
+  document.addEventListener('astro:page-load', setup);
 </script>
